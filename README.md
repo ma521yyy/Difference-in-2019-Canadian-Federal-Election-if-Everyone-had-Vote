@@ -1,1 +1,2 @@
-# Difference-in-2019-Canadian-Federal-Election-if-Everyone-had-Vote
+# Overview
+This repo contains code and data for Difference in 2019 Canadian Federal Election if Everyone had Vote. It was created by Qiyue Zhang. In this project, we aim to identify how the 2019 Canadian Federal Election would have been different if "everyone" had voted by multilevel regression with post-stratification. Some data is unable to be shared publicly and we detail how to obtain it below. The sections of this repo are: input, output, scripts.
