@@ -4,28 +4,104 @@ author: "Qiyue Zhang"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   pdf_document:
+    fig_width: 7
+    fig_height: 4
 abstract: |
-  In the last Canadian Federal Election, the Liberal Party narrowly won the most of the seats in the parliament and its biggest adversary the Conservative Party has gained more seats than the last election. In this paper, we aim to identify how the 2019 Canadian Federal Election would have been different if "everyone" had voted. We ran a multilevel logistic regression model using 37,822 observations from the results of online survey data provided by the 2019 Canadian Election Study (CES). To provide more robust conclusion, we utilize the regression with post-stratification method using 2017 General Social Survey (GSS) data provided by Statistics Canada. Our research finds out that Conservative actually wins the popular vote. Hence, our finding shows the importance of converting people to your cause, getting them to turn out to vote, and how the two are linked.
+  In the last Canadian Federal Election, the Liberal Party narrowly won the most of the seats in the parliament and its biggest adversary the Conservative Party has gained more seats than the last election. In this paper, we aim to identify how the 2019 Canadian Federal Election would have been different if "everyone" had voted. We ran a multilevel logistic regression model using observations from the results of online survey data provided by the 2019 Canadian Election Study (CES). To provide more robust conclusion, we utilize the regression with post-stratification method using 2017 General Social Survey (GSS) data provided by Statistics Canada. Our research finds out that Conservative actually wins the popular vote. Hence, our finding shows the importance of converting people to your cause, getting them to turn out to vote, and how the two are linked.
   
   **Keywords:** 2019 Canadian Federal Election; Liberal; Conservative; Multilevel regression with post-stratification; Voter turnout
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
-
+#setup library
+library(ggplot2)
+library(dplyr)
+library(knitr)
+library(readr)
+library(tidyverse)
+library(broom)
+library(lme4)
+library(readr)
+#import cleaned data use for analysis
+survey <- read_csv("survey_cleaned.csv")
+post <- read_csv("census_cleaned.csv")
+#remove NA by na.omit()
+survey <- na.omit(survey)
+post <- na.omit(post)
 ```
 
 # 1 Introduction
 Voter turnout has been declining in recent Canadian federal elections[Ouellet, 2019]. Just over three-quarters (77.1%) of Canadians reported voting in the 2019 Federal Election. Statistics Canada conducted a supplement to the November 2019 Labour Force Survey that asked respondents about the voting in the October 21, 2019, federal election. Among the 22.9% of Canadians who did not vote in 2019 Federal Election, the main 18 different reasons collected were grouped into four categories: Everyday life reasons (45.9%), Political reasons (41.9%), Electoral process reasons (5.4%), All other reasons (6.8%)[Government of Canada, S. C., 2020, February 26]. For the nation’s democracy to function properly and for the government to provide fair representation, all eligible Canadians must have the opportunity to vote and be encouraged to do so.
 
-Even though the final result of the Canadian federal elections involves a stable percentage of non-voting, does it really have an effect on the election outcome? We are interested in identifying how the 2019 Canadian Federal Election might be changed if "everyone" had voted. To accomplish this, we construct a multilevel logistic regression model based on the party preference of the 37,822 observations as the dependent variable, and their demographic background as explanatory variables, where data is provided by the 2019 Canadian Election Study - Online Survey. We then obtain the fitted estimations by utilizing the model with post-stratification method using the 2017 General Social Survey (GSS) data provided by Statistics Canada.
+Even though the final result of the Canadian federal elections involves a stable percentage of non-voting, does it really have an effect on the election outcome? We are interested in identifying how the 2019 Canadian Federal Election might be changed if "everyone" had voted. To accomplish this, we construct a multilevel logistic regression model based on the party preference of the respondents from the survey data as the dependent variable, and their demographic background as explanatory variables, where data is provided by the 2019 Canadian Election Study - Online Survey. We then obtain the fitted estimations by utilizing the model with post-stratification method using the 2017 General Social Survey (GSS) data provided by Statistics Canada.
 
 This paper is structured in the following manner. The two datasets that we used for the model will be discussed in Section 2 along with the description of the data cleaning process. Section 3 introduces the model we choose to construct, that is the methodology of the multilevel regression with post-stratification. Section 4 presents our result on the estimated 2019 Canadian Federal Election outcome. Lastly, we comment on our findings, address limitations, and suggestions for future work in Section 5.
 
 
 # 2 Data
+## Survey data
 
+The survey data used to train our model for this report is the subset data obtained from the 37,822 observations from the results of online survey data provided by the 2019 Canadian Election Study (CES). We do not consider the surveys conducted in the previous years since we want to focus on the 2019 Canadian Federal Election specifically. 2019 CES is a survey designed to document the attitudes of Canadians during and after the 2019 election. It provides data on a variety of political and social topics, such as views of democracy, political interest, opinions of current leaders and parties, and topics of interest in the corresponding election cycle. In 2019, the CES is conducted via online and phone-based surveys. In this paper, we will examine the data resulting from the online CES, partially on the factors of sex, education, employment, province, born in Canada, and age group that can impact the vote for the Liberal Party or the Conservative Party.
+
+The target population of the survey includes all Canadian citizens and permanent residents, aged 18 or older. The Campaign Period Survey (CPS) held from September 13th to October 21st, 2019, produce an online sample of 37,822 members of the Canadian general population through Qualtrics platform, with targets stratified by region within Canada and balanced on gender and age within each region with an aim for 50% men and 50% women and an aim for 28% respondents aged 18-34, 33% aged 35-54 and 39% aged 55 and higher. To increase the total number of respondents, survey target was increased during the last five days of the campaign. 10,340 respondents from the CPS were re-contacted after the election for a follow-up survey, which is the Post-Election Survey (PES) held from October 24th to November 11th, 2019. And, the survey instrument was also presented on the Qualtrics online platform. The weights of the survey sample have been created for the dataset using an iterative "raking" process, as provided by the ipfraking command in STATA15.[Stephenson et al. 2020]
+
+A subset of the online 2019 Canadian Election Study (CES) dataset is selected and retrieved for this report. We use the subset data to build our model based on the respondents’ vote choice as the dependent variable and their demographic background as explanatory variables. Key demographic divisions reflected in the contemporary Canadian political landscape are what we are focusing on in our model. The subset is cleaned by firstly selecting interested variables and then rename some variables to keep consistency with the census data. We also reconstruct many variables into binary or categorical variables for a more convenient model building later. Vote choice is the variable that only exists in the survey dataset indicating the respondent's vote for Liberal Party or Conservative Party only, which are the main two competitive parties we are focusing on. The other six explanatory variables are included in both survey data and post-stratification data. Figures 1-6 display the distribution of the six reconstructed variables from survey data by party preference. 
+
+```{r, echo=FALSE}
+#create a bar plot of sex categorized by parties
+sex <-table(survey$votechoice, survey$sex)
+barplot(sex, beside=TRUE, main="Figure 1: Respondent Vote Choice in 2019 by Sex", xlab= "Sex", ylab= "Number of Respondents", col = c("red", "blue"))
+legend("bottom", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8, bg = "white")
+```
+
+Sex is a binary variable by "Male" and "Female". According to Figure 1, females prefer Liberal better than Conservative, but males prefer the other way and support the Conservative.
+
+```{r, echo=FALSE}
+#create a bar plot of college and above education categorized by parties
+education <-table(survey$votechoice, survey$edu)
+barplot(education, beside=TRUE, main="Figure 2: Respondent Vote Choice in 2019 by Education", xlab= "Education", ylab= "Number of Respondents", col = c("red", "blue"))
+legend("topleft", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8)
+```
+
+Education variable is a binary variable containing two groups of respondents: people who have received some college education(1) and those who have not(0). Similar to sex, these two groups of people also prefer different parties, that people with a higher educational level vote for Liberal more with a small difference via Figure 2.
+
+```{r, echo=FALSE}
+#create a bar plot of employed for pay categorized by parties
+employment <-table(survey$votechoice, survey$employed)
+barplot(employment, beside=TRUE, main="Figure 3: Respondent Vote Choice in 2019 by Employment", xlab= "Employment", ylab= "Number of Respondents", col = c("red", "blue"))
+legend("bottom", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8, bg = "white")
+
+#create a bar plot of born in canada categorized by parties
+born <-table(survey$votechoice, survey$bornin_canada)
+barplot(born, beside=TRUE, main="Figure 4: Respondent Vote Choice in 2019 by Born in Canada", xlab= "Born in Canada", ylab= "Number of Respondents", col = c("red", "blue"))
+legend("topleft", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8)
+```
+
+Moreover, employment and born in Canada are two variables also constructed into binary variables. For employment, 1 represents respondents who are employed for pay, and 0 otherwise. For born in Canada, 1 indicates "yes", and 0 indicates "no". Interestingly, there is not much difference in the preference of party between the two groups for both variables, that a very little more vote goes for Conservative Party in all four groups.
+
+```{r, echo=FALSE}
+#create a bar plot of provinces categorized by parties
+par(las=2) # make label text perpendicular to axis
+par(mar=c(5,8,4,2)) # increase y-axis margin
+province <-table(survey$votechoice, survey$province)
+barplot(province, beside=TRUE, horiz=TRUE, main="Figure 5: Respondent Vote Choice in 2019 by Provinces", xlab= "Number of Respondents", col = c("red", "blue"), cex.names=0.6)
+legend("bottomright", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8)
+```
+
+Province has also shown to be associated with voter preference with our survey data. According to Figure 5, more than half of people from Alberta and Saskatchewan more likely to vote for the Conservative, but more than half of people from Quebec, Prince Edward Island, and Nova Scotia more likely to vote for the Liberal. And, province Ontario with its most population also prefers the Liberal.
+
+```{r, echo=FALSE}
+#create a bar plot of age groups categorized by parties
+par(las=2) # make label text perpendicular to axis
+par(mar=c(5,8,4,2)) # increase y-axis margin
+age <-table(survey$votechoice, survey$age)
+barplot(age, beside=TRUE, horiz=TRUE, main="Figure 6: Respondent Vote Choice in 2019 by Age Groups", xlab= "Number of Respondents", col = c("red", "blue"))
+legend("bottomright", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8)
+```
+Younger voters under 44 years old prefer the Liberal more. Respondents over this age prefer the Conservative more. However, an exception occurs that there is a tie for the 60 to 74 age group.  
+
+## Post-stratification data 
 
 
 
