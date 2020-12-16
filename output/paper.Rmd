@@ -5,7 +5,7 @@ date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
   pdf_document:
 abstract: |
-  In the last Canadian Federal Election, the Liberal Party narrowly won the most of the seats in the parliament and its biggest adversary the Conservative Party has gained more seats than the last election. In this paper, we aim to identify how the 2019 Canadian Federal Election would have been different if "everyone" had voted. We ran a multilevel logistic regression model using 37,822 observations from the results of online survey data provided by the 2019 Canadian Election Study (CES). To provide more robust conclusion, we utilize the regression with post-stratification method using 2016 Census data provided by Statistics Canada. Our research finds out that Conservative actually wins the popular vote. Hence, our finding shows the importance of converting people to your cause, getting them to turn out to vote, and how the two are linked.
+  In the last Canadian Federal Election, the Liberal Party narrowly won the most of the seats in the parliament and its biggest adversary the Conservative Party has gained more seats than the last election. In this paper, we aim to identify how the 2019 Canadian Federal Election would have been different if "everyone" had voted. We ran a multilevel logistic regression model using 37,822 observations from the results of online survey data provided by the 2019 Canadian Election Study (CES). To provide more robust conclusion, we utilize the regression with post-stratification method using 2017 General Social Survey (GSS) data provided by Statistics Canada. Our research finds out that Conservative actually wins the popular vote. Hence, our finding shows the importance of converting people to your cause, getting them to turn out to vote, and how the two are linked.
   
   **Keywords:** 2019 Canadian Federal Election; Liberal; Conservative; Multilevel regression with post-stratification; Voter turnout
 ---
@@ -17,11 +17,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # 1 Introduction
-Voter turnout has been declining in recent Canadian federal elections.[Ouellet, 2019] Just over three-quarters (77.1%) of Canadians reported voting in the 2019 Federal Election. Statistics Canada conducted a supplement to the November 2019 Labour Force Survey that asked respondents about the voting in the October 21, 2019, federal election. Among the 22.9% of Canadians who did not vote in 2019 Federal Election, the main 18 different reasons collected were grouped into four categories: Everyday life reasons (45.9%), Political reasons (41.9%), Electoral process reasons (5.4%), All other reasons (6.8%).[Government of Canada, S. C., 2020, February 26] For the nation’s democracy to function properly and for the government to provide fair representation, all eligible Canadians must have the opportunity to vote and be encouraged to do so.
+Voter turnout has been declining in recent Canadian federal elections[Ouellet, 2019]. Just over three-quarters (77.1%) of Canadians reported voting in the 2019 Federal Election. Statistics Canada conducted a supplement to the November 2019 Labour Force Survey that asked respondents about the voting in the October 21, 2019, federal election. Among the 22.9% of Canadians who did not vote in 2019 Federal Election, the main 18 different reasons collected were grouped into four categories: Everyday life reasons (45.9%), Political reasons (41.9%), Electoral process reasons (5.4%), All other reasons (6.8%)[Government of Canada, S. C., 2020, February 26]. For the nation’s democracy to function properly and for the government to provide fair representation, all eligible Canadians must have the opportunity to vote and be encouraged to do so.
 
-Even though the final result of the Canadian federal elections involves a stable percentage of non-voting, does it really have effect on the election outcome? We are interested in identifying how the 2019 Canadian Federal Election might be changed if "everyone" had voted. To accomplish this, we construct a multilevel logistic regression model based on the party preference of the 37,822 observations as the dependent variable, and their demographic background as explanatory variables, where data is provided by the 2019 Canadian Election Study - Online Survey. Then we obtain the fitted estimations by utilizing the model with post-stratification method using the 2016 Census data provided by Statistics Canada.
+Even though the final result of the Canadian federal elections involves a stable percentage of non-voting, does it really have an effect on the election outcome? We are interested in identifying how the 2019 Canadian Federal Election might be changed if "everyone" had voted. To accomplish this, we construct a multilevel logistic regression model based on the party preference of the 37,822 observations as the dependent variable, and their demographic background as explanatory variables, where data is provided by the 2019 Canadian Election Study - Online Survey. We then obtain the fitted estimations by utilizing the model with post-stratification method using the 2017 General Social Survey (GSS) data provided by Statistics Canada.
 
-This paper is structured in the following manner. The two datasets that we used for the model will be discussed in Section 2 along with the description of the data cleaning process. Section 3 introduces on the model we choose to construct, that is the methodology of the multilevel regression with post-stratification. Section 4 presents our result on the estimated 2019 Canadian Federal Election outcome. Lastly, we comment on our findings, address limitations, and suggest for future work in Section 5.
+This paper is structured in the following manner. The two datasets that we used for the model will be discussed in Section 2 along with the description of the data cleaning process. Section 3 introduces the model we choose to construct, that is the methodology of the multilevel regression with post-stratification. Section 4 presents our result on the estimated 2019 Canadian Federal Election outcome. Lastly, we comment on our findings, address limitations, and suggestions for future work in Section 5.
 
 
 # 2 Data
@@ -44,6 +44,10 @@ Research shows that when communities have strong associations, they are in fact 
 For a country as diverse as Canada, that’s a sure win for everyone.
 
 
+# Appendix
+Github link which contains all the code, dataset(except for original 2019 CES and 2017 GSS data, method to download is attached in readme.md), and report for the project: https://github.com/ma521yyy/Difference-in-2019-Canadian-Federal-Election-if-Everyone-had-Vote 
+
+
 # References
 
 
@@ -64,8 +68,6 @@ Wikipedia contributors. (2020, December 8). 2019 Canadian federal election. In W
 
 
 
-# Appendix
-Github link which contains all the code, dataset(except for original 2019 CES and 2016 Census data, method to download is attached in readme.md), and report for the project: https://github.com/ma521yyy/Difference-in-2019-Canadian-Federal-Election-if-Everyone-had-Vote 
 
 
 

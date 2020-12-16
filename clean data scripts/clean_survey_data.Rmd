@@ -1,0 +1,154 @@
+---
+title: "clean_survey_data_from_CES"
+author: "Qiyue Zhang"
+date: "16/12/2020"
+output: html_document
+---
+```{r setup, include=FALSE}
+#set up libraries
+knitr::opts_chunk$set(echo = TRUE)
+library(haven)
+library(tidyverse)
+library(dplyr)
+library(cesR)
+library(labelled)
+```
+
+```{r}
+# Grabbing ces2019_web dataset
+ces2019_web <- read_dta("ces2019_web.dta")
+```
+
+```{r}
+# Converting dataset to factor form
+ces2019_web <- labelled::to_factor(ces2019_web)
+```
+
+```{r}
+# Keep variables that we're interested
+reduced_data <- 
+  ces2019_web %>% 
+  select(cps19_gender,
+         cps19_education,
+         cps19_employment,
+         cps19_bornin_canada,
+         cps19_province,
+         cps19_votechoice,
+         cps19_income_number,
+         pes19_age
+         )
+```
+
+```{r}
+# rename some variables 
+survey <- reduced_data %>% rename(
+  sex = cps19_gender,
+  votechoice = cps19_votechoice,
+  edu = cps19_education,
+  income = cps19_income_number,
+  employed = cps19_employment,
+  bornin_canada = cps19_bornin_canada,
+  province = cps19_province,
+  age = pes19_age
+  )
+```
+
+```{r}
+## Clean up##
+#Rename gender variable to keep consistency with census data:
+survey <- survey %>%
+  mutate(sex = case_when(
+    sex == "A woman" ~ "Female",
+    sex == "A man" ~ "Male",
+    TRUE ~ "NA"
+  ))
+
+#Simplify the voting choice variable by reducing the number of categories:
+survey <- survey %>%
+  mutate(votechoice = case_when(
+    votechoice == "Liberal Party" ~ "Liberal Party",
+    votechoice == "Conservative Party" ~ "Conservative Party",
+    TRUE ~ "NA"
+  ))
+
+#Change education data in to binary 1/0 (college or not) variable:
+survey <- survey %>%
+  mutate(edu = case_when(
+    edu == "Some elementary school" ~ 0L,
+    edu == "No schooling" ~ 0L,
+    edu == "Completed elementary school" ~ 0L,
+    edu == "Don't know/ Prefer not to answer" ~ NA_integer_,
+    edu == "Completed secondary/ high school" ~ 0L,
+    edu == "Some secondary/ high school"~ 0L,
+    TRUE ~ 1L
+  )) 
+
+#Change income variable into income groups to keep consistency with census data:
+survey <- survey %>% mutate(income = case_when(income >= 25000  & income <= 49999 ~ '$25,000 to $49,999',
+                                             income >= 75000  & income <= 99999 ~ '$75,000 to $99,999',
+                                             income >= 100000  & income <= 124999 ~ '$100,000 to $ 124,999',
+                                             income >= 50000  & income <= 74999 ~ '$50,000 to $74,999',
+                                             income < 25000 ~ 'Less than $25,000',
+                                             income > 125000 ~ '$125,000 and more',
+                                             TRUE ~ "NA"))
+
+#Change employed data in to binary 1/0 (employed for pay or not) variable:
+survey <- survey %>%
+  mutate(employed = case_when(
+    employed == "Don't know/ Prefer not to answer" ~ NA_integer_,
+    employed == "Student" ~ 0L,
+    employed == "Unemployed/ looking for work" ~ 0L,
+    employed == "Self employed (with or without employees)" ~ 0L,
+    employed == "Retired" ~ 0L,
+    employed == "Disabled" ~ 0L,
+    employed == "Caring for a family"~ 0L,
+    employed == "Other (please specify)" ~ NA_integer_,
+    TRUE ~ 1L
+  ))
+
+#Change born in canada data in to binary 1/0 (born in canada or not) variable:
+survey <- survey %>%
+  mutate(bornin_canada = case_when(
+    bornin_canada == "Don't know/ Prefer not to say" ~ NA_integer_,
+    bornin_canada == "No" ~ 0L,
+    TRUE ~ 1L
+  )) 
+
+#Simplify province data by reducing the number of categories to keep consistency with census data:
+survey <- survey %>%
+  mutate(province = case_when(
+    province == "Northwest Territories" ~ "NA",
+    province == "Nunavut" ~ "NA",
+    province == "Yukon" ~ "NA",
+    province == "Quebec" ~ "Quebec",
+    province == "Manitoba" ~ "Manitoba",
+    province == "Ontario" ~ "Ontario",
+    province == "Alberta" ~ "Alberta",
+    province == "Nova Scotia" ~ "Nova Scotia",
+    province == "British Columbia" ~ "British Columbia",
+    province == "Saskatchewan" ~ "Saskatchewan",
+    province == "Prince Edward Island" ~ "Prince Edward Island",
+    province == "New Brunswick" ~ "New Brunswick",
+    province == "Newfoundland and Labrador" ~ "Newfoundland and Labrador"
+  ))
+
+#Change age variable into age groups with exception of under 18: 
+survey <- survey %>% mutate(age = case_when(age >= 18  & age <= 29 ~ '18 to 29',
+                                             age >= 30  & age <= 44 ~ '30 to 44',
+                                             age >= 45  & age <= 59 ~ '45 to 59',
+                                             age >= 60  & age <= 74 ~ '60 to 74',
+                                             age > 75 ~ '75 and above',
+                                             TRUE ~ "NA"))
+```
+
+```{r}
+#Create a .csv file
+write.csv(survey, "survey_cleaned.csv")
+```
+
+
+
+
+
+
+
