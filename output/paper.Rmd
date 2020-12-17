@@ -1,5 +1,5 @@
 ---
-title: "Difference in 2019 Canadian Federal Election if Everyone had Vote"
+title: "Difference in 2019 Canadian Federal Election if Everyone had Voted"
 author: "Qiyue Zhang"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output:
@@ -12,7 +12,7 @@ abstract: |
   **Keywords:** 2019 Canadian Federal Election; Liberal; Conservative; Multilevel regression with post-stratification; Voter turnout
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 #setup library
 library(ggplot2)
@@ -29,6 +29,8 @@ post <- read_csv("census_cleaned.csv")
 #remove NA by na.omit()
 survey <- na.omit(survey)
 post <- na.omit(post)
+#remove income variable no longer used for survey data
+survey <- survey[,-8]
 ```
 
 # 1 Introduction
@@ -133,12 +135,90 @@ As shown by the pie plot of age groups, people aged between 30 to 74 take up ove
 
 
 # 3 Model
+## 3.1 Multilevel Logistic Regression Model
+```{r, include=FALSE}
+# Construct the vote intention variable from survey data so that it is binary indicates by 1 and 0
+survey$vote_Conservative[survey$votechoice=="Conservative Party"]<-1
+survey$vote_Conservative[survey$votechoice=="Liberal Party"]<-0
+```
+
+We are interested in determining the popular vote outcome for the Conservative Party for the 2019 Canadian Federal Election by using a multilevel logistic regression based on the factors of sex, education, employment, born in Canada, and age group for different intercept for each province.
+
+Multilevel logistic regression model: 
+$$\log \left(\frac{\hat{p}_{ij}}{1-\hat{p}_{ij}}\right)={\beta}_{0}+{\beta}_{1} x_{ij}^{sexMale}+{\beta}_{2} x_{ij}^{educationed}+{\beta}_{3} x_{ij}^{employed}+{\beta}_{4} x_{ij}^{bornCA}$$
+$$+{\beta}_{5} x_{ij}^{age30-44}+{\beta}_{6} x_{ij}^{age45-59}+{\beta}_{7} x_{ij}^{age60-74}+{\beta}_{8} x_{ij}^{age75above}$$
+
+where $i=1,...,711$(number of observations), $j=1,..., 10$(number of provinces), 
+
+$p$ represents the probability of voting for the Conservative Party, 
+
+$\frac{p}{1-p}$ represents the odds of voting for the Conservative Party, 
+
+${\beta}_{1}$ coefficient represents the change in log odds for male respondents, 
+
+${\beta}_{2}$ coefficient represents the change in log odds for respondent who has received some college education, 
+
+${\beta}_{3}$ coefficient represents the change in log odds for respondent who is employed for pay, 
+
+${\beta}_{4}$ coefficient represents the change in log odds for respondent who is born in Canada,  
+
+${\beta}_{5}$ coefficient represents the change in log odds for respondent age between 30 to 44, 
+
+${\beta}_{6}$ coefficient represents the change in log odds for respondent age between 45 to 59, 
+
+${\beta}_{7}$ coefficient represents the change in log odds for respondent age between 60 to 74, 
+
+${\beta}_{8}$ coefficient represents the change in log odds for respondent age from 75 and above, 
+
+$x$ represents each factor respectively. 
 
 
 
 
 # 4 Results
+## 4.1 Model Result
+```{r,include=FALSE}
+#Multilevel Logistic Model for different states
+model <- glmer(vote_Conservative ~ sex + edu + employed + bornin_canada + as.factor(age) + (1|province), data=survey, family =binomial)
+```
 
+Multilevel logistic regression model estimates by interpreting regression coefficients:
+$$\log \left(\frac{\hat{p}_{ij}}{1-\hat{p}_{ij}}\right)=0.37+0.57 x_{ij}^{sexMale}-0.66 x_{ij}^{educationed}+0.01 x_{ij}^{employed}-0.24 x_{ij}^{bornCA}$$
+$$-0.05 x_{ij}^{age30-44}+0.24 x_{ij}^{age45-59}-0.02 x_{ij}^{age60-74}+0.14 x_{ij}^{age75above}$$
+```{r,echo=FALSE}
+#Statistical summary
+kable(summary(model)[["coefficients"]], digits=4, 
+      caption="Summary of Model Estimates")
+```
+
+
+## 4.2 Post-stratification Calculation Result
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#post-stratification calculation
+#Making prediction using our model with census data, and we saving the results of those predictions by adding a new column to the census_data data set called 'estimate'
+post$estimate <- 
+  model %>% 
+  predict(newdata = post, type="response")
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+##together vote outcome
+#together <- post %>%
+#mutate(proportion_voting_for_conservative = estimate*n) %>%
+#  summarise(voting_for_conservative = sum(proportion_voting_for_conservative)/sum(n))
+#kable(together, digits=4, 
+#      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election if Everyone had Voted")
+
+##summarize by geography
+#geography <- post %>%
+#mutate(proportion_voting_for_conservative = estimate*n) %>%
+#  group_by(state) %>%
+#  summarise(voting_for_conservative = sum(proportion_voting_for_conservative)/sum(n))
+#kable(geography, digits=4, 
+#      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election if Everyone had Voted by Province")
+
+```
+Errors exists in the code for getting vote outcome. To be fixed.
 
 # 5 Discussion, Limitations, and Future Work
 Voter participation rates are symbolic of the health of a democracy.

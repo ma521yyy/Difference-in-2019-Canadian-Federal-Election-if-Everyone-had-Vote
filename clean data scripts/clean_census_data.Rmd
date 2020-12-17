@@ -28,7 +28,6 @@ reduced_dat <-
          worked_last_week,
          place_birth_canada,
          province,
-         income_family,
          age
          )
 ```
@@ -37,7 +36,6 @@ reduced_dat <-
 # rename some variables 
 census <- reduced_dat %>% rename(
   edu = education,
-  income = income_family,
   employed = worked_last_week,
   bornin_canada = place_birth_canada)
 ```
@@ -83,8 +81,10 @@ census <- census %>% mutate(age = case_when(age >= 18  & age <= 29 ~ '18 to 29',
 
 
 ```{r}
+#Create cell counts:
+cell_counts <- census %>% group_by(province, sex, as.factor(age), employed, bornin_canada, edu) %>% count() %>% rename(age = "as.factor(age)")
 #Create a .csv file
-write.csv(census, "census_cleaned.csv")
+write.csv(cell_counts, "census_cleaned.csv")
 ```
 
 
