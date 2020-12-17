@@ -20,7 +20,6 @@ library(dplyr)
 library(knitr)
 library(readr)
 library(tidyverse)
-library(broom)
 library(lme4)
 library(readr)
 #import cleaned data use for analysis
@@ -160,7 +159,7 @@ ${\beta}_{2}$ coefficient represents the change in log odds for respondent who h
 
 ${\beta}_{3}$ coefficient represents the change in log odds for respondent who is employed for pay, 
 
-${\beta}_{4}$ coefficient represents the change in log odds for respondent who is born in Canada,  
+${\beta}_{4}$ coefficient represents the change in log odds for respondent who was born in Canada,  
 
 ${\beta}_{5}$ coefficient represents the change in log odds for respondent age between 30 to 44, 
 
@@ -172,7 +171,25 @@ ${\beta}_{8}$ coefficient represents the change in log odds for respondent age f
 
 $x$ represents each factor respectively. 
 
+The general aim of multilevel logistic regression is to estimate the odds that an event will occur (the yes/no outcome) while taking the dependency of data into account. Practically, it will allow you to estimate such odds as a function of lower level variables, higher level variables, and the way they are interrelated (cross-level interactions). Specifically, a multilevel logistic regression can be used when the outcome variable describes the presence/absence of an event or a behavior[Sommet 2017].
 
+We considered using a linear regression model, but finally we kept with logistic regression model. As in our situation, the response variable, whether vote for the Conservative Party, is a binary variable where 1 represent vote for the Conservative and 0 represent vote for the Liberal. Thus, it is more appropriate to use a logistic regression model in predicting the popular vote outcome for the Conservative Party for the 2019 Canadian Federal Election. Moreover, layers were added to our model, so we can get different intercepts for each state in order to make a preciser determination.
+
+Whereas linear regression gives the predicted mean value of an outcome variable at a particular value of a predictor variable, logistic regression gives the conditional probability that an outcome variable equals one at a particular value of a predictor variable (e.g. the likelihood of vote for the Conservative for a male respondent aged at 35 who has received some college education, and he was born in Canada, and also he is employed for pay). 
+
+The expression on the left hand side of the equation is often called logit function, it is used to predict such a probability. In our model, it describes the relationship between a series of explanatory variables(sex, education, employment, born in Canada, and age group) and the conditional probability that an outcome variable $Y_i$ equals one(vote for the Conservative). Also, a multilevel regression is used to smooth noisy estimates in the cells with too little data by using overall or nearby averages[Multilevel regression with poststratification 2020].
+
+We use `glmer()` from `lme4` package in `R` to fit the model to our data. We use `as.factor()` for age variable, because even though age is numerical in the original dataset, but it becomes categorical as we group them into age groups during the data cleaning process. For each categorical variable(sex, education, employment, born in Canada, and age group) with $n$ levels, we need $n-1$ dummy variables to fully study its influence on our response variable(vote for the Conservative).
+
+## 3.2 Post-stratification Calculation
+$$\hat{y}^{PS}=\frac{\sum N_j\hat{y_j}}{\sum N_j}$$
+where $\hat{y_j}$ is the estimate in each cell and $\sum N_j$ is the population size of $j^{th}$ cell based off demographics.
+
+In order to estimate the proportion of voters who will vote for the Conservative Party, we performed a post-stratification analysis. We make predictions using our model above with census data from 2017 GSS, specifically estimate $y$ from each cell using our multilevel model, meaning use demographics to extrapolate how entire population will vote. 
+
+Response recorded basic demographics: age(5 categories), gender(2 categories), education(2 categories), born in Canada(2 categories), employment(2 categories), thus partitioning the data into 80 cells. 
+
+We weight each proportion estimate by the respective population size and sum those values and divide by the entire population size. The post-stratification weights are a sophisticated weighting strategy that help to reduce sampling error and potential non-response bias[ESS Methodology. n.d.].
 
 
 # 4 Results
@@ -218,7 +235,7 @@ post$estimate <-
 #      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election if Everyone had Voted by Province")
 
 ```
-Errors exists in the code for getting vote outcome. To be fixed.
+Errors exist in the code for getting vote outcome. To be fixed.
 
 # 5 Discussion, Limitations, and Future Work
 Voter participation rates are symbolic of the health of a democracy.
@@ -248,25 +265,53 @@ pie(employed_p, main="Figure 9: Employment Proportion in 2017 GSS", col = c("red
 
 # References
 
-
 Depner, W. (2020, March 03). Political apathy main reason for not voting in 2019 Canadian federal election. Retrieved from https://www.vicnews.com/news/political-apathy-main-reason-for-not-voting-in-2019-canadian-federal-election/
+
+Douglas Bates, Martin Maechler, Ben Bolker, Steve Walker (2015). Fitting
+  Linear Mixed-Effects Models Using lme4. Journal of Statistical Software,
+  67(1), 1-48. doi:10.18637/jss.v067.i01.
+
+ESS Methodology. (n.d.). Retrieved from https://www.europeansocialsurvey.org/methodology/ess_methodology/data_processing_archiving/weighting.html#:~:text=Post-stratification weights are a,gender, education, and region.
 
 GSS. (2017). General Social Survey – Family (GSS). Retrieved from https://www.statcan.gc.ca/eng/survey/household/4501
 
 Government of Canada, S. C. (2020, February 26). Reasons for not voting in the federal election, October 21, 2019. Retrieved from https://www150.statcan.gc.ca/n1/daily-quotidien/200226/dq200226b-eng.htm
 
+Hadley Wickham et al., (2019). Welcome to the tidyverse. Journal of Open Source Software, 4(43), 1686,  https://doi.org/10.21105/joss.01686
+
+Hadley Wickham. ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New
+  York, 2016, https://ggplot2.tidyverse.org 
+
+Hadley Wickham, Jim Hester and Romain Francois (2018). readr: Read Rectangular Text Data. R package version 1.3.1. https://CRAN.R-project.org/package=readr
+
+Hadley Wickham, Romain François, Lionel Henry and Kirill Müller (2020). dplyr:
+  A Grammar of Data Manipulation. R package version 1.0.2.
+  https://CRAN.R-project.org/package=dplyr
+  
+Hao Zhu (2020). kableExtra: Construct Complex Table with 'kable' and Pipe Syntax. http://haozhu233.github.io/kableExtra/,
+  https://github.com/haozhu233/kableExtra.
+
 Home. (1970, October 01). Retrieved from https://www.elections.ca/content.aspx?section=res&dir=rec/eval/pes2019/lfs&document=index&lang=e
 
 How can we encourage more Canadians to vote? (n.d.). Retrieved from https://cnmc.ca/how-can-we-encourage-more-canadians-to-vote/
 
+Multilevel regression with poststratification. (2020, October 14). Retrieved from https://en.wikipedia.org/wiki/Multilevel_regression_with_poststratification
+
 Ouellet, Andre Real, "The Democracy Defibrillator: The Decline of Canadian Voter Turnout in Federal Elections, and Suggestions for
 Revitalisation" (2019). Major Papers. 77. Retrieved from https://scholar.uwindsor.ca/major-papers/77
 
+R Core Team (2020). R: A language and environment for statistical computing. R Foundation for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+
 Rohan Alexander and Sam Caetano (2020). "GSS_Cleaning" Retreived from https://q.utoronto.ca/courses/184062
+
+Sommet, N., & Morselli, D. (2017). Keep Calm and Learn Multilevel Logistic Modeling: A Simplified Three-Step Procedure Using Stata, R, Mplus, and SPSS. International Review of Social Psychology, 30(1), 203–218. DOI: http://doi.org/10.5334/irsp.90
 
 Stephenson, Laura B; Harell, Allison; Rubenson, Daniel; Loewen, Peter John, 2020, "2019 Canadian Election Study - Online Survey", https://doi.org/10.7910/DVN/DUS88V, Harvard Dataverse, V1
 
 Wikipedia contributors. (2020, December 8). 2019 Canadian federal election. In Wikipedia, The Free Encyclopedia. Retrieved 15:18, December 9, 2020, from https://en.wikipedia.org/w/index.php?title=2019_Canadian_federal_election&oldid=993089856
+
+Yihui Xie (2020). knitr: A General-Purpose Package for Dynamic Report
+  Generation in R. R package version 1.30, https://yihui.org/knitr/ 
 
 
 
