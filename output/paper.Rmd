@@ -40,18 +40,18 @@ This paper is structured in the following manner. The two datasets that we used 
 
 
 # 2 Data
-## Survey data
+## 2.1 CES Survey Data
 
-The survey data used to train our model for this report is the subset data obtained from the 37,822 observations from the results of online survey data provided by the 2019 Canadian Election Study (CES). We do not consider the surveys conducted in the previous years since we want to focus on the 2019 Canadian Federal Election specifically. 2019 CES is a survey designed to document the attitudes of Canadians during and after the 2019 election. It provides data on a variety of political and social topics, such as views of democracy, political interest, opinions of current leaders and parties, and topics of interest in the corresponding election cycle. In 2019, the CES is conducted via online and phone-based surveys. In this paper, we will examine the data resulting from the online CES, partially on the factors of sex, education, employment, province, born in Canada, and age group that can impact the vote for the Liberal Party or the Conservative Party.
+The survey data used to train our model for this report is the subset data obtained from the 37,822 observations from the results of online survey data provided by the 2019 Canadian Election Study (CES). We do not consider the surveys conducted in the previous years since we want to focus on the 2019 Canadian Federal Election specifically. 2019 CES is a survey designed to document the attitudes of Canadians during and after the 2019 election. It provides data on a variety of political and social topics, such as views of democracy, political interest, opinions of current leaders and parties, and topics of interest in the corresponding election cycle. In 2019, the CES is conducted via online and phone-based surveys. In this paper, we will examine the data resulting from the online CES, partially on the factors of sex, education, employment, province, born in Canada, and age group that can have an impact on the vote for the Liberal Party or the Conservative Party.
 
-The target population of the survey includes all Canadian citizens and permanent residents, aged 18 or older. The Campaign Period Survey (CPS) held from September 13th to October 21st, 2019, produce an online sample of 37,822 members of the Canadian general population through Qualtrics platform, with targets stratified by region within Canada and balanced on gender and age within each region with an aim for 50% men and 50% women and an aim for 28% respondents aged 18-34, 33% aged 35-54 and 39% aged 55 and higher. To increase the total number of respondents, survey target was increased during the last five days of the campaign. 10,340 respondents from the CPS were re-contacted after the election for a follow-up survey, which is the Post-Election Survey (PES) held from October 24th to November 11th, 2019. And, the survey instrument was also presented on the Qualtrics online platform. The weights of the survey sample have been created for the dataset using an iterative "raking" process, as provided by the ipfraking command in STATA15.[Stephenson et al. 2020]
+The target population of the survey includes all Canadian citizens and permanent residents, aged 18 or older, which is exactly the desired population we are interested in. The Campaign Period Survey (CPS) held from September 13th to October 21st, 2019, produce an online sample of 37,822 members of the Canadian general population through Qualtrics platform, with targets stratified by region within Canada and balanced on gender and age within each region with an aim for 50% men and 50% women and an aim for 28% respondents aged 18-34, 33% aged 35-54 and 39% aged 55 and higher[Stephenson et al. 2020]. To be noticed, the survey target was increased during the last five days of the campaign for increasing the total number of respondents. The the Post-Election Survey (PES) held from October 24th to November 11th, 2019, that re-contacted 10,340 respondents from the CPS for a follow-up survey. And, the survey instrument was also presented on the Qualtrics online platform. The weights of the survey sample have been created for the dataset using an iterative "raking" process, as provided by the ipfraking command in STATA15[Stephenson et al. 2020].
 
-A subset of the online 2019 Canadian Election Study (CES) dataset is selected and retrieved for this report. We use the subset data to build our model based on the respondents’ vote choice as the dependent variable and their demographic background as explanatory variables. Key demographic divisions reflected in the contemporary Canadian political landscape are what we are focusing on in our model. The subset is cleaned by firstly selecting interested variables and then rename some variables to keep consistency with the census data. We also reconstruct many variables into binary or categorical variables for a more convenient model building later. Vote choice is the variable that only exists in the survey dataset indicating the respondent's vote for Liberal Party or Conservative Party only, which are the main two competitive parties we are focusing on. The other six explanatory variables are included in both survey data and post-stratification data. Figures 1-6 display the distribution of the six reconstructed variables from survey data by party preference. 
+A subset of the online 2019 Canadian Election Study (CES) dataset is selected and retrieved for this report. We use the subset data to build our model based on the respondents’ vote choice as the dependent variable and their demographic background as explanatory variables. Key demographic divisions reflected in the contemporary Canadian political landscape are what we are focusing on in our model. The subset is cleaned by firstly selecting interested variables, and then renaming some variables to keep consistency with the census data. We also reconstruct many variables into binary or categorical variables for a more convenient model building later. Vote choice is the variable that only exists in the survey dataset indicating the respondent's vote for Liberal Party or Conservative Party only, which are the main two competitive parties we are focusing on. The other six explanatory variables are included in both survey data and post-stratification data. Figures 1-6 display the distribution of the six reconstructed variables from survey data by the party preference. 
 
 ```{r, echo=FALSE}
 #create a bar plot of sex categorized by parties
 sex <-table(survey$votechoice, survey$sex)
-barplot(sex, beside=TRUE, main="Figure 1: Respondent Vote Choice in 2019 by Sex", xlab= "Sex", ylab= "Number of Respondents", col = c("red", "blue"))
+barplot(sex, beside=TRUE, main="Figure 1: Respondent Vote Choice in 2019 CES by Sex", xlab= "Sex", ylab= "Number of Respondents", col = c("red", "blue"))
 legend("bottom", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8, bg = "white")
 ```
 
@@ -60,7 +60,7 @@ Sex is a binary variable by "Male" and "Female". According to Figure 1, females 
 ```{r, echo=FALSE}
 #create a bar plot of college and above education categorized by parties
 education <-table(survey$votechoice, survey$edu)
-barplot(education, beside=TRUE, main="Figure 2: Respondent Vote Choice in 2019 by Education", xlab= "Education", ylab= "Number of Respondents", col = c("red", "blue"))
+barplot(education, beside=TRUE, main="Figure 2: Respondent Vote Choice in 2019 CES by Education", xlab= "Education", ylab= "Number of Respondents", col = c("red", "blue"))
 legend("topleft", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8)
 ```
 
@@ -69,12 +69,12 @@ Education variable is a binary variable containing two groups of respondents: pe
 ```{r, echo=FALSE}
 #create a bar plot of employed for pay categorized by parties
 employment <-table(survey$votechoice, survey$employed)
-barplot(employment, beside=TRUE, main="Figure 3: Respondent Vote Choice in 2019 by Employment", xlab= "Employment", ylab= "Number of Respondents", col = c("red", "blue"))
+barplot(employment, beside=TRUE, main="Figure 3: Respondent Vote Choice in 2019 CES by Employment", xlab= "Employment", ylab= "Number of Respondents", col = c("red", "blue"))
 legend("bottom", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8, bg = "white")
 
 #create a bar plot of born in canada categorized by parties
 born <-table(survey$votechoice, survey$bornin_canada)
-barplot(born, beside=TRUE, main="Figure 4: Respondent Vote Choice in 2019 by Born in Canada", xlab= "Born in Canada", ylab= "Number of Respondents", col = c("red", "blue"))
+barplot(born, beside=TRUE, main="Figure 4: Respondent Vote Choice in 2019 CES by Born in Canada", xlab= "Born in Canada", ylab= "Number of Respondents", col = c("red", "blue"))
 legend("topleft", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8)
 ```
 
@@ -85,7 +85,7 @@ Moreover, employment and born in Canada are two variables also constructed into 
 par(las=2) # make label text perpendicular to axis
 par(mar=c(5,8,4,2)) # increase y-axis margin
 province <-table(survey$votechoice, survey$province)
-barplot(province, beside=TRUE, horiz=TRUE, main="Figure 5: Respondent Vote Choice in 2019 by Provinces", xlab= "Number of Respondents", col = c("red", "blue"), cex.names=0.6)
+barplot(province, beside=TRUE, horiz=TRUE, main="Figure 5: Respondent Vote Choice in 2019 CES by Provinces", xlab= "Number of Respondents", col = c("red", "blue"), cex.names=0.6)
 legend("bottomright", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8)
 ```
 
@@ -96,14 +96,40 @@ Province has also shown to be associated with voter preference with our survey d
 par(las=2) # make label text perpendicular to axis
 par(mar=c(5,8,4,2)) # increase y-axis margin
 age <-table(survey$votechoice, survey$age)
-barplot(age, beside=TRUE, horiz=TRUE, main="Figure 6: Respondent Vote Choice in 2019 by Age Groups", xlab= "Number of Respondents", col = c("red", "blue"))
+barplot(age, beside=TRUE, horiz=TRUE, main="Figure 6: Respondent Vote Choice in 2019 CES by Age Groups", xlab= "Number of Respondents", col = c("red", "blue"))
 legend("bottomright", legend= c("Conservative Party", "Liberal Party"), fill = c("red", "blue"), cex=0.8)
 ```
 Younger voters under 44 years old prefer the Liberal more. Respondents over this age prefer the Conservative more. However, an exception occurs that there is a tie for the 60 to 74 age group.  
 
-## Post-stratification data 
+## 2.2 GSS Census Data
 
+The census data used for post-stratification is the data collected by the 2017 General Social Survey (GSS) on the Family. We use the data from the closest year available to 2019, which is 2017, because we want to focus on the 2019 Canadian Federal Election specifically. GSS is a survey done by the Social and Aboriginal Statistics Division of Statistics Canada, and it is objective to gather data on social trends to monitor changes in the living conditions and well-being of Canadians over time, and then to provide information on specific current social policy issues or emerging interest. In this paper, we will examine the data resulting from the 2017 GSS, partially on the factors of sex, education, employment, province, born in Canada, and age group that can have an impact on the vote for the Liberal Party or the Conservative Party.
 
+The data for the GSS is collected from February 2 to November 30, 2017[GSS 2017]. The target population is non-institutionalized people aged 15 and older, living in the ten provinces[GSS 2017]. To be noticed, people from Yukon, Northwest Territories, and Nunavut are excluded from the dataset, and this can cause bias in the final results. Moreover, this survey is further reduced by it’s chosen frame. It uses a new frame that combines telephone numbers (landline and cellular) with Statistics Canada’s Address Register, and collects data via telephone[GSS 2017], which excludes people who do not have phones or do not have a stable address to be sampled. The frame is sampled by cross-sectional design, where geographical regions are split into strata. Each strata was then randomly sampled without replacement. However, non-sampling errors occur as a weakness of the survey, when the respondent did not understand or misinterpreted a question, refused to answer a question, or could not recall the requested information. Finally, the target sample size is 20,000 while the actual number of respondents is 20,602. The overall response rate for the 2017 GSS was 52.4%, and non-response was handled by adjusting the weight of households who responded to the survey to compensate for those who did not respond[GSS 2017].
+
+A subset of the 2017 General Social Survey (GSS) on the Family dataset is obtained for this report, which includes selected demographics and retrieved to post-stratify. The subset is cleaned by firstly selecting interested variables that match with the selected variables from survey data, then renaming some variables to keep consistency with the survey data. The selected variables contain sex, education, employment, province, born in Canada, and age group, which are all the factors that can be used to determine the vote for the Liberal Party or the Conservative Party. Similar to survey data, for the census data, we also reconstruct many variables into binary or categorical variables to fit the model later. Figures 7-12 display the distribution of the six reconstructed variables from census data. Since the graphs of binary variables sex, education, and employment show close proportion, please refers to appendix part 2 for Figures 7-9.
+
+```{r, echo=FALSE}
+born_p <-table(post$bornin_canada)
+pie(born_p, main="Figure 10: Born in Canada Proportion in 2017 GSS", col = c("red", "blue"), cex.main = 0.85)
+```
+
+Born in Canada is a binary variable where 1 indicates "yes", and 0 indicates "no". According to Figure 10, there are many more people who are born in Canada. However, refer to Figure 4, we know both groups show equal like for both parties. Then this large difference proportion may not have any strong effect on the vote outcome.
+
+```{r, echo=FALSE}
+province_p <-table(post$province)
+pie(province_p, main="Figure 11: Province Proportion in 2017 GSS", col = rainbow(10), cex.main = 0.85)
+```
+
+By the province distribution plot, we can see people from Ontario and Quebec take up the most proportion(nearly half), then people from other provinces split the rest of the half proportion, and people from Prince Edward Island take up the least.
+
+```{r, echo=FALSE}
+age_p <-table(post$age)
+pie(age_p, main="Figure 12: Age Proportion in 2017 GSS", col = rainbow(5), cex.main = 0.85)
+
+```
+
+As shown by the pie plot of age groups, people aged between 30 to 74 take up over 3/4 of the entire respondents and they are equally divided. Then the rest of the respondents come from the youngest people aged between 18 to 29, and the eldest people aged 75 and above, and they are also equally divided. Hence, the main component for the final result is the votes from the middle ages.
 
 
 # 3 Model
@@ -121,13 +147,31 @@ For a country as diverse as Canada, that’s a sure win for everyone.
 
 
 # Appendix
-Github link which contains all the code, dataset(except for original 2019 CES and 2017 GSS data, method to download is attached in readme.md), and report for the project: https://github.com/ma521yyy/Difference-in-2019-Canadian-Federal-Election-if-Everyone-had-Vote 
+1. Github link which contains all the code, dataset(except for original 2019 CES and 2017 GSS data, method to download is attached in readme.md), and report for the project: https://github.com/ma521yyy/Difference-in-2019-Canadian-Federal-Election-if-Everyone-had-Vote 
+
+2. Figures 7-9 display the distribution for binary variables of sex(femle, male), education(1 indicates some college education, 0 otherwise), and employment(1 indicates employed for pay, 0 otherwise) from census data. 
+
+```{r, echo=F}
+sex_p <-table(post$sex)
+pie(sex_p, main="Figure 7: Sex Proportion in 2017 GSS", col = c("red", "blue"), cex.main = 0.85)
+
+edu_p <-table(post$edu)
+pie(edu_p, main="Figure 8: Education Proportion in 2017 GSS", col = c("red", "blue"), cex.main = 0.85)
+
+employed_p <-table(post$employed)
+pie(employed_p, main="Figure 9: Employment Proportion in 2017 GSS", col = c("red", "blue"), cex.main = 0.85)
+
+
+```
+
 
 
 # References
 
 
 Depner, W. (2020, March 03). Political apathy main reason for not voting in 2019 Canadian federal election. Retrieved from https://www.vicnews.com/news/political-apathy-main-reason-for-not-voting-in-2019-canadian-federal-election/
+
+GSS. (2017). General Social Survey – Family (GSS). Retrieved from https://www.statcan.gc.ca/eng/survey/household/4501
 
 Government of Canada, S. C. (2020, February 26). Reasons for not voting in the federal election, October 21, 2019. Retrieved from https://www150.statcan.gc.ca/n1/daily-quotidien/200226/dq200226b-eng.htm
 
@@ -137,6 +181,8 @@ How can we encourage more Canadians to vote? (n.d.). Retrieved from https://cnmc
 
 Ouellet, Andre Real, "The Democracy Defibrillator: The Decline of Canadian Voter Turnout in Federal Elections, and Suggestions for
 Revitalisation" (2019). Major Papers. 77. Retrieved from https://scholar.uwindsor.ca/major-papers/77
+
+Rohan Alexander and Sam Caetano (2020). "GSS_Cleaning" Retreived from https://q.utoronto.ca/courses/184062
 
 Stephenson, Laura B; Harell, Allison; Rubenson, Daniel; Loewen, Peter John, 2020, "2019 Canadian Election Study - Online Survey", https://doi.org/10.7910/DVN/DUS88V, Harvard Dataverse, V1
 
