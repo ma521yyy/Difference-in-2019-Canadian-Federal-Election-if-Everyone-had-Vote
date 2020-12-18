@@ -1,0 +1,93 @@
+---
+title: "clean_census_data_from_GSS"
+author: "Qiyue Zhang"
+date: "16/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#workplace setup
+library(haven)
+library(tidyverse)
+library(dplyr)
+library(readr)
+```
+
+```{r}
+#import gss data
+gss <- read_csv("gss.csv")
+```
+
+```{r,warning=FALSE, message=FALSE}
+# Keep variables that we're interested
+reduced_dat <- 
+  gss %>% 
+  select(sex,
+         education,
+         worked_last_week,
+         place_birth_canada,
+         province,
+         age
+         )
+```
+
+```{r}
+# rename some variables 
+census <- reduced_dat %>% rename(
+  edu = education,
+  employed = worked_last_week,
+  bornin_canada = place_birth_canada)
+```
+
+```{r}
+## Clean up##
+#Change education data in to binary 1/0 (college or not) variable:
+census <- census %>%
+  mutate(edu = case_when(
+    edu == "High school diploma or a high school equivalency certificate" ~ 0L,
+    edu == "Trade certificate or diploma" ~ 0L,
+    edu == "Less than high school diploma or its equivalent" ~ 0L,
+    edu == "NA" ~ NA_integer_,
+    TRUE ~ 1L
+  )) 
+
+#Change employed data in to binary 1/0 (employed for pay or not) variable:
+census <- census %>%
+  mutate(employed = case_when(
+    employed == "No" ~ 0L,
+    employed == "Don't know" ~ NA_integer_,
+    employed == "NA" ~ NA_integer_,
+    TRUE ~ 1L
+  )) 
+
+#Change born in canada data in to binary 1/0 (born in canada or not) variable:
+census <- census %>%
+  mutate(bornin_canada = case_when(
+    bornin_canada == "Born outside Canada" ~ 0L,
+    bornin_canada == "NA" ~ NA_integer_,
+    bornin_canada == "Don't know" ~ NA_integer_,
+    TRUE ~ 1L
+  ))
+
+#Change age variable into age groups with exception of under 18: 
+census <- census %>% mutate(age = case_when(age >= 18  & age <= 29 ~ '18 to 29',
+                                             age >= 30  & age <= 44 ~ '30 to 44',
+                                             age >= 45  & age <= 59 ~ '45 to 59',
+                                             age >= 60  & age <= 74 ~ '60 to 74',
+                                             age > 75 ~ '75 and above',
+                                             TRUE ~ "NA"))
+```
+
+
+```{r}
+#Create cell counts:
+cell_counts <- census %>% group_by(province, sex, as.factor(age), employed, bornin_canada, edu) %>% count()
+#Create a .csv file
+write.csv(cell_counts, "census_cleaned.csv")
+```
+
+
+
+
+
