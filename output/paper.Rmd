@@ -118,7 +118,7 @@ age_p <-table(post$age)
 pie(age_p, main="Figure 12: Age Proportion in 2017 GSS", col = rainbow(5), cex.main = 0.85)
 ```
 
-By the pie plot of province and age groups according to Figure 11 and 12, we can see people ten provinces and five age groups equally split the entire population in the census dataset, which means people from every provinces and every age groups are well represented in the final vote outcome result.
+By the pie plots for province and age group according to Figure 11 and 12, we can see people from ten provinces and five age groups equally split the entire population in the census dataset, which means people from every province and every age group are well represented in the final vote outcome result.
 
 
 # 3 Model
@@ -237,7 +237,7 @@ For a country as diverse as Canada, that’s a sure win for everyone.
 # Appendix
 1. Github link which contains all the code, dataset(except for original 2019 CES and 2017 GSS data, method to download is attached in readme.md), and report for the project: https://github.com/ma521yyy/Difference-in-2019-Canadian-Federal-Election-if-Everyone-had-Vote 
 
-2. Figures 7-9 display the distribution for binary variables of sex(femle, male), education(1 indicates some college education, 0 otherwise), and employment(1 indicates employed for pay, 0 otherwise) from census data. 
+2. Figures 7-10 display the distributions for binary variables of sex(female, male), education(1 indicates some college education, 0 otherwise), employment(1 indicates employed for pay, 0 otherwise), and born in Canada(1 indicates "yes", 0 otherwise) from census data. 
 
 ```{r, echo=F}
 sex_p <-table(post$sex)
