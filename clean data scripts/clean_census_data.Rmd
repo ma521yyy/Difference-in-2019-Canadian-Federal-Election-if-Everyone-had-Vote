@@ -82,9 +82,14 @@ census <- census %>% mutate(age = case_when(age >= 18  & age <= 29 ~ '18 to 29',
 
 ```{r}
 #Create cell counts:
-cell_counts <- census %>% group_by(province, sex, as.factor(age), employed, bornin_canada, edu) %>% count() %>% rename(age = "as.factor(age)")
+census <- 
+  census %>%
+  count(sex, edu, employed, bornin_canada, province, age) %>%
+  group_by(sex, edu, employed, bornin_canada, province, age) 
+
+
 #Create a .csv file
-write.csv(cell_counts, "census_cleaned.csv")
+write.csv(census, "census_cleaned.csv")
 ```
 
 

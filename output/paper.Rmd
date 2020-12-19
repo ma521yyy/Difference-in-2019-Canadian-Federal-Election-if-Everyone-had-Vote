@@ -49,7 +49,7 @@ The target population of the survey includes all Canadian citizens and permanent
 
 A subset of the online 2019 Canadian Election Study (CES) dataset is selected and retrieved for this report. We use the subset data to build our model based on the respondents’ vote choice as the dependent variable and their demographic background as explanatory variables. Key demographic divisions reflected in the contemporary Canadian political landscape are what we are focusing on in our model. The subset is cleaned by firstly selecting interested variables, and then renaming some variables to keep consistency with the census data. We also reconstruct many variables into binary or categorical variables for a more convenient model building later. Vote choice is the variable that only exists in the survey dataset indicating the respondent's vote for Liberal Party or Conservative Party only, which are the main two competitive parties we are focusing on. The other six explanatory variables are included in both survey data and post-stratification data. Figures 1-6 display the distribution of the six reconstructed variables from survey data by the party preference. 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #create a bar plot of sex categorized by parties
 sex <-table(survey$votechoice, survey$sex)
 barplot(sex, beside=TRUE, main="Figure 1: Respondent Vote Choice in 2019 CES by Sex", xlab= "Sex", ylab= "Number of Respondents", col = c("red", "blue"))
@@ -58,7 +58,7 @@ legend("bottom", legend= c("Conservative Party", "Liberal Party"), fill = c("red
 
 Sex is a binary variable by "Male" and "Female". According to Figure 1, females prefer Liberal better than Conservative, but males prefer the other way and support the Conservative.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #create a bar plot of college and above education categorized by parties
 education <-table(survey$votechoice, survey$edu)
 barplot(education, beside=TRUE, main="Figure 2: Respondent Vote Choice in 2019 CES by Education", xlab= "Education", ylab= "Number of Respondents", col = c("red", "blue"))
@@ -67,7 +67,7 @@ legend("topleft", legend= c("Conservative Party", "Liberal Party"), fill = c("re
 
 Education variable is a binary variable containing two groups of respondents: people who have received some college education(1) and those who have not(0). Similar to sex, these two groups of people also prefer different parties, that people with a higher educational level vote for Liberal more with a small difference via Figure 2.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #create a bar plot of employed for pay categorized by parties
 employment <-table(survey$votechoice, survey$employed)
 barplot(employment, beside=TRUE, main="Figure 3: Respondent Vote Choice in 2019 CES by Employment", xlab= "Employment", ylab= "Number of Respondents", col = c("red", "blue"))
@@ -81,7 +81,7 @@ legend("topleft", legend= c("Conservative Party", "Liberal Party"), fill = c("re
 
 Moreover, employment and born in Canada are two variables also constructed into binary variables. For employment, 1 represents respondents who are employed for pay, and 0 otherwise. For born in Canada, 1 indicates "yes", and 0 indicates "no". Interestingly, there is not much difference in the preference of party between the two groups for both variables, that a very little more vote goes for Conservative Party in all four groups.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #create a bar plot of provinces categorized by parties
 par(las=2) # make label text perpendicular to axis
 par(mar=c(5,8,4,2)) # increase y-axis margin
@@ -92,7 +92,7 @@ legend("bottomright", legend= c("Conservative Party", "Liberal Party"), fill = c
 
 Province has also shown to be associated with voter preference with our survey data. According to Figure 5, more than half of people from Alberta and Saskatchewan more likely to vote for the Conservative, but more than half of people from Quebec, Prince Edward Island, and Nova Scotia more likely to vote for the Liberal. And, province Ontario with its most population also prefers the Liberal.
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #create a bar plot of age groups categorized by parties
 par(las=2) # make label text perpendicular to axis
 par(mar=c(5,8,4,2)) # increase y-axis margin
@@ -108,29 +108,17 @@ The census data used for post-stratification is the data collected by the 2017 G
 
 The data for the GSS is collected from February 2 to November 30, 2017[GSS 2017]. The target population is non-institutionalized people aged 15 and older, living in the ten provinces[GSS 2017]. To be noticed, people from Yukon, Northwest Territories, and Nunavut are excluded from the dataset, and this can cause bias in the final results. Moreover, this survey is further reduced by it’s chosen frame. It uses a new frame that combines telephone numbers (landline and cellular) with Statistics Canada’s Address Register, and collects data via telephone[GSS 2017], which excludes people who do not have phones or do not have a stable address to be sampled. The frame is sampled by cross-sectional design, where geographical regions are split into strata. Each strata was then randomly sampled without replacement. However, non-sampling errors occur as a weakness of the survey, when the respondent did not understand or misinterpreted a question, refused to answer a question, or could not recall the requested information. Finally, the target sample size is 20,000 while the actual number of respondents is 20,602. The overall response rate for the 2017 GSS was 52.4%, and non-response was handled by adjusting the weight of households who responded to the survey to compensate for those who did not respond[GSS 2017].
 
-A subset of the 2017 General Social Survey (GSS) on the Family dataset is obtained for this report, which includes selected demographics and retrieved to post-stratify. The subset is cleaned by firstly selecting interested variables that match with the selected variables from survey data, then renaming some variables to keep consistency with the survey data. The selected variables contain sex, education, employment, province, born in Canada, and age group, which are all the factors that can be used to determine the vote for the Liberal Party or the Conservative Party. Similar to survey data, for the census data, we also reconstruct many variables into binary or categorical variables to fit the model later. Figures 7-12 display the distribution of the six reconstructed variables from census data. Since the graphs of binary variables sex, education, and employment show close proportion, please refers to appendix part 2 for Figures 7-9.
+A subset of the 2017 General Social Survey (GSS) on the Family dataset is obtained for this report, which includes selected demographics and retrieved to post-stratify. The subset is cleaned by firstly selecting interested variables that match with the selected variables from survey data, then renaming some variables to keep consistency with the survey data. The selected variables contain sex, education, employment, province, born in Canada, and age group, which are all the factors that can be used to determine the vote for the Liberal Party or the Conservative Party. Similar to survey data, for the census data, we also reconstruct many variables into binary or categorical variables to fit the model later. Figures 7-12 display an even distribution trend for all the six reconstructed variables from census data. Due to the length of the six pie plots for the six variables, please refers to appendix part 2 for Figures 7-10 for the binary variables sex, education, employment, and born in Canada.
 
-```{r, echo=FALSE}
-born_p <-table(post$bornin_canada)
-pie(born_p, main="Figure 10: Born in Canada Proportion in 2017 GSS", col = c("red", "blue"), cex.main = 0.85)
-```
-
-Born in Canada is a binary variable where 1 indicates "yes", and 0 indicates "no". According to Figure 10, there are many more people who are born in Canada. However, refer to Figure 4, we know both groups show equal like for both parties. Then this large difference proportion may not have any strong effect on the vote outcome.
-
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 province_p <-table(post$province)
 pie(province_p, main="Figure 11: Province Proportion in 2017 GSS", col = rainbow(10), cex.main = 0.85)
-```
 
-By the province distribution plot, we can see people from Ontario and Quebec take up the most proportion(nearly half), then people from other provinces split the rest of the half proportion, and people from Prince Edward Island take up the least.
-
-```{r, echo=FALSE}
 age_p <-table(post$age)
 pie(age_p, main="Figure 12: Age Proportion in 2017 GSS", col = rainbow(5), cex.main = 0.85)
-
 ```
 
-As shown by the pie plot of age groups, people aged between 30 to 74 take up over 3/4 of the entire respondents and they are equally divided. Then the rest of the respondents come from the youngest people aged between 18 to 29, and the eldest people aged 75 and above, and they are also equally divided. Hence, the main component for the final result is the votes from the middle ages.
+By the pie plot of province and age groups according to Figure 11 and 12, we can see people ten provinces and five age groups equally split the entire population in the census dataset, which means people from every provinces and every age groups are well represented in the final vote outcome result.
 
 
 # 3 Model
@@ -202,7 +190,7 @@ model <- glmer(vote_Conservative ~ sex + edu + employed + bornin_canada + as.fac
 Multilevel logistic regression model estimates by interpreting regression coefficients:
 $$\log \left(\frac{\hat{p}_{ij}}{1-\hat{p}_{ij}}\right)=0.37+0.57 x_{ij}^{sexMale}-0.66 x_{ij}^{educationed}+0.01 x_{ij}^{employed}-0.24 x_{ij}^{bornCA}$$
 $$-0.05 x_{ij}^{age30-44}+0.24 x_{ij}^{age45-59}-0.02 x_{ij}^{age60-74}+0.14 x_{ij}^{age75above}$$
-```{r,echo=FALSE}
+```{r,echo=FALSE, message=FALSE, warning=FALSE}
 #Statistical summary
 kable(summary(model)[["coefficients"]], digits=4, 
       caption="Summary of Model Estimates")
@@ -219,23 +207,26 @@ post$estimate <-
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-##together vote outcome
-#together <- post %>%
-#mutate(proportion_voting_for_conservative = estimate*n) %>%
-#  summarise(voting_for_conservative = sum(proportion_voting_for_conservative)/sum(n))
-#kable(together, digits=4, 
-#      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election if Everyone had Voted")
+#together vote outcome
+together <- post %>%
+mutate(proportion_voting_for_conservative = estimate*n) %>%
+  summarise(voting_for_conservative = sum(proportion_voting_for_conservative)/sum(n))
+kable(together, digits=4, 
+      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election if Everyone had Voted")
 
-##summarize by geography
-#geography <- post %>%
-#mutate(proportion_voting_for_conservative = estimate*n) %>%
-#  group_by(state) %>%
-#  summarise(voting_for_conservative = sum(proportion_voting_for_conservative)/sum(n))
-#kable(geography, digits=4, 
-#      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election if Everyone had Voted by Province")
+#summarize by geography
+geography <- post %>%
+mutate(proportion_voting_for_conservative = estimate*n) %>%
+  group_by(province) %>%
+  summarise(voting_for_conservative = sum(proportion_voting_for_conservative)/sum(n))
+kable(geography, digits=4, 
+      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election if Everyone had Voted by Province")
 
 ```
-Errors exist in the code for getting vote outcome. To be fixed.
+
+
+
+
 
 # 5 Discussion, Limitations, and Future Work
 Voter participation rates are symbolic of the health of a democracy.
@@ -258,7 +249,8 @@ pie(edu_p, main="Figure 8: Education Proportion in 2017 GSS", col = c("red", "bl
 employed_p <-table(post$employed)
 pie(employed_p, main="Figure 9: Employment Proportion in 2017 GSS", col = c("red", "blue"), cex.main = 0.85)
 
-
+born_p <-table(post$bornin_canada)
+pie(born_p, main="Figure 10: Born in Canada Proportion in 2017 GSS", col = c("red", "blue"), cex.main = 0.85)
 ```
 
 
