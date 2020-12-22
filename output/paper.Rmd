@@ -1,7 +1,7 @@
 ---
-title: "Difference in 2019 Canadian Federal Election if Everyone had Voted"
+title: "Conservative Party Actually Wins the Popular Vote in the 2019 Canadian Federal Election with a Full Voter Turnout"
 author: "Qiyue Zhang"
-date: "`r format(Sys.time(), '%d %B %Y')`"
+date: "December 22, 2020"
 output:
   pdf_document:
     fig_width: 7
@@ -21,7 +21,6 @@ library(knitr)
 library(readr)
 library(tidyverse)
 library(lme4)
-library(readr)
 #import cleaned data use for analysis
 survey <- read_csv("survey_cleaned.csv")
 post <- read_csv("census_cleaned.csv")
@@ -35,7 +34,7 @@ survey <- survey[,-8]
 # 1 Introduction
 Voter turnout has been declining in recent Canadian federal elections[Ouellet, 2019]. Just over three-quarters (77.1%) of Canadians reported voting in the 2019 Federal Election. Statistics Canada conducted a supplement to the November 2019 Labour Force Survey that asked respondents about the voting in the October 21, 2019, federal election. Among the 22.9% of Canadians who did not vote in 2019 Federal Election, the main 18 different reasons collected were grouped into four categories: Everyday life reasons (45.9%), Political reasons (41.9%), Electoral process reasons (5.4%), All other reasons (6.8%)[Government of Canada, S. C., 2020, February 26]. For the nation’s democracy to function properly and for the government to provide fair representation, all eligible Canadians must have the opportunity to vote and be encouraged to do so.
 
-Even though the final result of the Canadian federal elections involves a stable percentage of non-voting, does it really have an effect on the election outcome? We are interested in identifying how the 2019 Canadian Federal Election might be changed if "everyone" had voted. To accomplish this, we construct a multilevel logistic regression model based on the party preference of the respondents from the survey data as the dependent variable, and their demographic background as explanatory variables, where data is provided by the 2019 Canadian Election Study - Online Survey. We then obtain the fitted estimations by utilizing the model with post-stratification method using the 2017 General Social Survey (GSS) data provided by Statistics Canada.
+Even though the final result of the Canadian federal elections involves a stable percentage of non-voting, does it really have an effect on the election outcome? We are interested in identifying how the 2019 Canadian Federal Election might be changed with a full voter turnout. To accomplish this, we construct a multilevel logistic regression model based on the party preference of the respondents from the survey data as the dependent variable, and their demographic background as explanatory variables, where data is provided by the 2019 Canadian Election Study - Online Survey. We then obtain the fitted estimations by utilizing the model with post-stratification method using the 2017 General Social Survey (GSS) data provided by Statistics Canada.
 
 This paper is structured in the following manner. The two datasets that we used for the model will be discussed in Section 2 along with the description of the data cleaning process. Section 3 introduces the model we choose to construct, that is the methodology of the multilevel regression with post-stratification. Section 4 presents our result on the estimated 2019 Canadian Federal Election outcome. Lastly, we comment on our findings, address limitations, and suggestions for future work in Section 5.
 
@@ -106,7 +105,7 @@ Younger voters under 44 years old prefer the Liberal more. Respondents over this
 
 The census data used for post-stratification is the data collected by the 2017 General Social Survey (GSS) on the Family. We use the data from the closest year available to 2019, which is 2017, because we want to focus on the 2019 Canadian Federal Election specifically. GSS is a survey done by the Social and Aboriginal Statistics Division of Statistics Canada, and it is objective to gather data on social trends to monitor changes in the living conditions and well-being of Canadians over time, and then to provide information on specific current social policy issues or emerging interest. In this paper, we will examine the data resulting from the 2017 GSS, partially on the factors of sex, education, employment, province, born in Canada, and age group that can have an impact on the vote for the Liberal Party or the Conservative Party.
 
-The data for the GSS is collected from February 2 to November 30, 2017[GSS 2017]. The target population is non-institutionalized people aged 15 and older, living in the ten provinces[GSS 2017]. To be noticed, people from Yukon, Northwest Territories, and Nunavut are excluded from the dataset, and this can cause bias in the final results. Moreover, this survey is further reduced by it’s chosen frame. It uses a new frame that combines telephone numbers (landline and cellular) with Statistics Canada’s Address Register, and collects data via telephone[GSS 2017], which excludes people who do not have phones or do not have a stable address to be sampled. The frame is sampled by cross-sectional design, where geographical regions are split into strata. Each strata was then randomly sampled without replacement. However, non-sampling errors occur as a weakness of the survey, when the respondent did not understand or misinterpreted a question, refused to answer a question, or could not recall the requested information. Finally, the target sample size is 20,000 while the actual number of respondents is 20,602. The overall response rate for the 2017 GSS was 52.4%, and non-response was handled by adjusting the weight of households who responded to the survey to compensate for those who did not respond[GSS 2017].
+The data for the GSS is collected from February 2 to November 30, 2017[GSS 2017]. The target population is non-institutionalized people aged 15 and older, living in the ten provinces[GSS 2017]. To be noticed, people from Yukon, Northwest Territories, and Nunavut are excluded from the dataset, and this can cause bias in the final results. Moreover, this survey is further reduced by it’s chosen frame. It uses a new frame that combines telephone numbers (landline and cellular) with Statistics Canada’s Address Register, and collects data via telephone[GSS 2017], which excludes people who do not have phones or do not have a stable address. The frame is sampled by cross-sectional design, where geographical regions are split into strata. Each strata was then randomly sampled without replacement. However, non-sampling errors occur as a weakness of the survey, when the respondent did not understand or misinterpreted a question, refused to answer a question, or could not recall the requested information. Finally, the target sample size is 20,000 while the actual number of respondents is 20,602. The overall response rate for the 2017 GSS was 52.4%, and non-response was handled by adjusting the weight of households who responded to the survey to compensate for those who did not respond[GSS 2017].
 
 A subset of the 2017 General Social Survey (GSS) on the Family dataset is obtained for this report, which includes selected demographics and retrieved to post-stratify. The subset is cleaned by firstly selecting interested variables that match with the selected variables from survey data, then renaming some variables to keep consistency with the survey data. The selected variables contain sex, education, employment, province, born in Canada, and age group, which are all the factors that can be used to determine the vote for the Liberal Party or the Conservative Party. Similar to survey data, for the census data, we also reconstruct many variables into binary or categorical variables to fit the model later. Figures 7-12 display an even distribution trend for all the six reconstructed variables from census data. Due to the length of the six pie plots for the six variables, please refers to appendix part 2 for Figures 7-10 for the binary variables sex, education, employment, and born in Canada.
 
@@ -196,6 +195,7 @@ kable(summary(model)[["coefficients"]], digits=4,
       caption="Summary of Model Estimates")
 ```
 
+From the summary table and the model with its estimated coefficients above, we can see male voters have the biggest impact on the favor of voting for the Conservative then followed by voters aged between 45 to 59 and 75 and above as they all have a relatively large positive estimated coefficients. Conversely, voters who have received some college education have the largest negative coefficients, which means the largest negative effect on the favor of voting for the Conservative. Further, we know for voters who are employed for pay, aged between 30 to 44 and 60 to 74 tend to be neutral since their estimates are close to zero, which interprets a very small impact on determining the vote outcome.
 
 ## 4.2 Post-stratification Calculation Result
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
@@ -212,7 +212,7 @@ together <- post %>%
 mutate(proportion_voting_for_conservative = estimate*n) %>%
   summarise(voting_for_conservative = sum(proportion_voting_for_conservative)/sum(n))
 kable(together, digits=4, 
-      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election if Everyone had Voted")
+      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election with Full Voter Turnout")
 
 #summarize by geography
 geography <- post %>%
@@ -220,18 +220,20 @@ mutate(proportion_voting_for_conservative = estimate*n) %>%
   group_by(province) %>%
   summarise(voting_for_conservative = sum(proportion_voting_for_conservative)/sum(n))
 kable(geography, digits=4, 
-      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election if Everyone had Voted by Province")
+      caption="Vote Outcome for the Conservative Party of 2019 Canadian Federal Election with Full Voter Turnout by Province")
 
 ```
 
-
-
+According to Table 2, we have found the Conservative Party wins more votes in the 2019 Canadian Federal Election with a 50.51% winning rate when a full voter turnout is performed based on our estimation, which means the Conservative Party is the actual winner for the 2019 Canadian Federal Election. Specifically, Table 3 shows the winning rate in each province. We can see the biggest fan of the Conservative Party are voters from Saskatchewan and Alberta, then followed by voters from Manitoba and British Columbia, that all four voting estimations from the four provinces are over half for the Conservative Party. Ontario, New Brunswick, and Newfoundland and Labrador have a nearly half voting percentage for the Conservation. However, people from Nova Scotia, Quebec, and Prince Edward Island do not like the Conservatives much.
 
 
 # 5 Discussion, Limitations, and Future Work
-Voter participation rates are symbolic of the health of a democracy.
-Research shows that when communities have strong associations, they are in fact more likely to participate in national and local politics.[How can we encourage more Canadians to vote? n.d.]
-For a country as diverse as Canada, that’s a sure win for everyone.
+
+In this paper, we have found the Conservative Party is the actual winner for the 2019 Canadian Federal Election if all eligible voters are motivated to vote based on our estimations by a multilevel logistic regression model with post-stratification via data from the 2019 Canadian Election Study (CES) and the 2017 General Social Survey (GSS). Specifically, we know people from Saskatchewan, Alberta, Manitoba, and British Columbia are the mainstay for the Conservative Party as they all have over half vote outcome percentage to the Conservative Party. Hence, to win the election, the Conservatives should try the hardest to encourage voters from these four provinces to show up and vote for them because they have a larger chance of voting for them. Then voters from a close half winning rate provinces, such as Ontario, New Brunswick, and Newfoundland and Labrador are the potential winning provinces that the Conservatives should target and work on their votes. Based on our estimation, male voters have the maximum potential in voting for the Conservative then followed by voters aged between 45 to 59 and 75 and above. Also, the Conservatives should works harder on converting votes from voters who are employed for pay, aged between 30 to 44 and 60 to 74 to their cause, because these voters are neutral and can be easier to influence. In this way, the Conservative Party can reach their desired result and wins the Canadian Federal Election by combining attracting votes and realizing votes.
+
+However, inevitable limitations occur in our datasets and model that may cause bias for our final result. Firstly, the datasets we use for this paper is relatively small. Especially for the GSS census data that we used for post-stratification, there is only 711 observations left after cleaning and removing missing values as there is a large number of missing values. Also, as mentioned in Section 2 for the GSS census data before, due to the methodology of the survey, people from Yukon, Northwest Territories, and Nunavut, and people who do not have phones or do not have a stable address are further excluded from the dataset. Then it is not sufficiently large to represent the entire population, and the estimations might be biased. To resolve this problem, we should spend more money and use more effective strategies during the data collecting period to prevent non-response in the future. Secondly, to keep the consistency between the survey data and census data for the model to apply, we are unable not include all potential factors, such as race, belief, or income level, factors that can also have an impact on determining the vote outcome between the Liberal Party or the Conservative Party. For the future, we should contain as many as possible potentials factors in our model, then we can result in more precise estimations. Thirdly, limitations occur as we only consider two parties as to the voting outcome for our model, the Liberal Party or the Conservative Party. However, there are many more eligible parties can vote for in the real life, and a binary logistic regression model is not satisfied for an accurate prediction. Hence, for the future, we should consider a multinomial logistic regression model instead of a binary logistic regression model, that multinomial is more appropriate to use by involving more candidates.
+
+In conclusion, voter participation rates are symbolic of the health of a democracy. And surprisingly we have found the outcome for the 2019 Canadian Federal Election can actually change from the Conservative Party to the Conservative Party when all eligible voters vote. Research shows that when communities have strong associations, they are in fact more likely to participate in national and local politics.[How can we encourage more Canadians to vote? n.d.] For a country as diverse as Canada, that’s a sure win for everyone.
 
 
 # Appendix
