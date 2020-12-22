@@ -18,7 +18,7 @@ Clean data scripts contain R Markdown files that take inputs data then produce s
 The produced csv data outputs saved in output/~
 
 # Outputs
-Output contain data that are cleaned from the input data by clean data scripts, the final report paper in pdf form and its R Markdown file.
+Output contain data that are cleaned from the input data by clean data scripts, the final report paper in pdf form and its R Markdown file:
 
 -census_cleaned.csv
 
